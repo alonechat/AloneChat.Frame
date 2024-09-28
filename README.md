@@ -1,2 +1,2 @@
-# AlongChat.Frame
-The main program’ s frame of AlongChat project’s.
+# AloneChat.Frame
+The main program’s frame of AloneChat project’s.

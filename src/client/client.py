@@ -1,9 +1,10 @@
-import socket
 import os
-import threading
 import json
-from cmd import Cmd
 import time
+import socket
+import threading
+
+from cmd import Cmd
 
 
 class Client(Cmd):

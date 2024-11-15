@@ -18,7 +18,10 @@ class Client(Cmd):
         构造
         """
         super().__init__()
-        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__socket = socket.socket(
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        )
         self.__id = None
         self.__nickname = None
         self.__isLogin = False
@@ -34,7 +37,10 @@ class Client(Cmd):
             try:
                 buffer = self.__socket.recv(1024).decode()
                 obj = json.loads(buffer)
-                thismsg = '[' + str(obj['sender_nickname']) + '(' + str(obj['sender_id']) + ')' + ']' + obj['message']
+                thismsg = \
+                    '[' + str(obj['sender_nickname']) + \
+                    '(' + str(obj['sender_id']) + ')' + ']' + \
+                    obj['message']
                 self.__messages_list.append(thismsg)
                 print(thismsg)
 
@@ -103,7 +109,11 @@ class Client(Cmd):
         """
         message = args
         # 显示自己发送的消息
-        print('[' + str(self.__nickname) + '(' + str(self.__id) + ')' + ']', message)
+        print(
+            '[' + str(self.__nickname) + \
+            '(' + str(self.__id) + ')' + ']', 
+            message
+        )
         # 开启子线程用于发送数据
         thread = threading.Thread(target=self.__send_message_thread, args=(message,))
         thread.setDaemon(True)
@@ -131,15 +141,27 @@ class Client(Cmd):
         """
         command = arg.split(' ')[0]
         if command == '':
-            print('[Help] login nickname - 登录到聊天室，nickname是你选择的昵称')
-            print('[Help] send message   - 发送消息，message是你输入的消息')
-            print('[Help] logout         - 退出聊天室')
+            print(
+                '[Help] login nickname - 登录到聊天室，nickname是你选择的昵称'
+            )
+            print(
+                '[Help] send message   - 发送消息，message是你输入的消息'
+            )
+            print(
+                '[Help] logout         - 退出聊天室'
+            )
         elif command == 'login':
-            print('[Help] login nickname - 登录到聊天室，nickname是你选择的昵称')
+            print(
+                '[Help] login nickname - 登录到聊天室，nickname是你选择的昵称'
+            )
         elif command == 'send':
-            print('[Help] send message   - 发送消息，message是你输入的消息')
+            print(
+                '[Help] send message   - 发送消息，message是你输入的消息'
+            )
         elif command == 'logout':
-            print('[Help] logout         - 退出聊天室')
+            print(
+                '[Help] logout         - 退出聊天室'
+            )
         else:
             print('[Help] 没有查询到你想要了解的指令')
 

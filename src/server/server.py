@@ -38,15 +38,30 @@ class Server:
                     self.__broadcast(obj['sender_id'], obj['message'])
                 elif obj['type'] == 'logout':
                     print('[Server] 用户', user_id, nickname, '退出聊天室')
-                    self.__broadcast(message='用户 ' + str(nickname) + '(' + str(user_id) + ')' + '退出聊天室')
+
+                    self.__broadcast(
+                        message='用户 ' + 
+                        str(nickname) + 
+                        '(' + str(user_id) + ')' + '退出聊天室'
+                    )
+
                     self.__connections[user_id].close()
                     self.__connections[user_id] = None
                     self.__nicknames[user_id] = None
+
                     break
                 else:
-                    print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
+                    print(
+                        '[Server] 无法解析json数据包:', 
+                        connection.getsockname(), 
+                        connection.fileno()
+                    )
             except Exception:
-                print('[Server] 连接失效:', connection.getsockname(), connection.fileno())
+                print(
+                    '[Server] 连接失效:', 
+                    connection.getsockname(), 
+                    connection.fileno()
+                )
                 self.__connections[user_id].close()
                 self.__connections[user_id] = None
                 self.__nicknames[user_id] = None
@@ -81,13 +96,24 @@ class Server:
                 }).encode())
 
                 # 开辟一个新的线程
-                thread = threading.Thread(target=self.__user_thread, args=(len(self.__connections) - 1,))
+                thread = threading.Thread(
+                    target=self.__user_thread, 
+                    args=(len(self.__connections) - 1,)
+                )
                 thread.setDaemon(True)
                 thread.start()
             else:
-                print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
+                print(
+                    '[Server] 无法解析json数据包:', 
+                    connection.getsockname(), 
+                    connection.fileno()
+                )
         except Exception:
-            print('[Server] 无法接受数据:', connection.getsockname(), connection.fileno())
+            print(
+                '[Server] 无法接受数据:', 
+                connection.getsockname(), 
+                connection.fileno()
+            )
 
     def start(self):
         """
@@ -108,8 +134,15 @@ class Server:
         # 开始侦听
         while True:
             connection, address = self.__socket.accept()
-            print('[Server] 收到一个新连接', connection.getsockname(), connection.fileno())
+            print(
+                '[Server] 收到一个新连接', 
+                connection.getsockname(), 
+                connection.fileno()
+            )
 
-            thread = threading.Thread(target=self.__waitForLogin, args=(connection,))
+            thread = threading.Thread(
+                target=self.__waitForLogin, 
+                args=(connection,)
+            )
             thread.setDaemon(True)
             thread.start()

@@ -17,8 +17,12 @@ class _DNS:
         self.__pool: dict = {'system':'127.0.0.1'}
 
     def load(self):
-        with open(self.__storage, 'w') as dns_pairs:
-            temp_pool = dns_pairs.readlines
-            for pairs in temp_pool:
-                unipair = ' '.split(pairs)
-                self.__pool[unipair[0]] = unipair[1]
+        with open(self.__storage, 'r') as file:
+            for line in file:
+                # 去除每行的首尾空白字符
+                line = line.strip()
+                # 假设每行的格式为 "domain ip_address"
+                parts = line.split()
+                if len(parts) == 2:
+                    domain, ip = parts
+                    domain_ip_dict[domain] = ip

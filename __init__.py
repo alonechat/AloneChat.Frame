@@ -9,3 +9,4 @@ script_dir = os.path.dirname(script_path)
 with open('path.txt', 'w') as pathes:
     pathes.write(script_dir)
     print(f'This script is running at {script_dir}. DON\'T MOVE IT!')
+    

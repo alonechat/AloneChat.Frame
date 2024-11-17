@@ -4,7 +4,7 @@ import getpass
 
 # 用于存储用户信息的文件
 BASEDIR   = os.path.dirname(os.path.abspath(__file__))
-USERSFILE = os.path.join(BASEDIR, 'USERS.txt')
+USERSFILE = os.path.join(BASEDIR, '../../../resource/dynamic/', 'USERS.txt')
 
 # 加载用户数据
 def load_users():

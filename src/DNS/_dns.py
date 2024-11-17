@@ -26,3 +26,16 @@ class _DNS:
                 if len(parts) == 2:
                     domain, ip = parts
                     domain_ip_dict[domain] = ip
+    
+    def save(self):
+        with open(self.__storage, 'w') as output_file:
+            for domain, ip in self.__pool.items():
+                # 将每对DOMAIN-IP写入文件，中间用空格分隔
+                output_file.write(f'{domain} {ip}\n')
+    
+    def __del__(self):
+        self.save()
+        del self.__pool
+        del self.__storage
+        del self.load
+        del self.save

@@ -13,7 +13,7 @@ if sys.argv[1] in ['c', 'client']:
     
 elif sys.argv[1] in ['s', 'server']:
     server = Server()
-    Server.start()
+    server.start()
     
 else:
     raise IndexError('START OPTIONS must in c/s/client/server.')

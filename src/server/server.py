@@ -1,6 +1,8 @@
 import socket
 import threading
 import json
+import sys
+import auth
 
 
 class Server:
@@ -12,7 +14,7 @@ class Server:
         """
         构造
         """
-        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         self.__connections = list()
         self.__nicknames = list()
 
@@ -66,19 +68,31 @@ class Server:
                 self.__connections[user_id] = None
                 self.__nicknames[user_id] = None
 
-    def __broadcast(self, user_id=0, message=''):
+    def __broadcast(self, user_id=0, message='', broadcaster = None):
         """
         广播
         :param user_id: 用户id(0为系统)
         :param message: 广播内容
         """
-        for i in range(1, len(self.__connections)):
-            if user_id != i and self.__connections[i]:
-                self.__connections[i].send(json.dumps({
-                    'sender_id': user_id,
-                    'sender_nickname': self.__nicknames[user_id],
-                    'message': message
-                }).encode())
+
+        if broadcaster is None:
+            # 广播到所有人
+            for i in range(1, len(self.__connections)):
+                if user_id != i and self.__connections[i]:
+                    self.__connections[i].send(json.dumps({
+                        'sender_id': user_id,
+                        'sender_nickname': self.__nicknames[user_id],
+                        'message': message
+                    }).encode())
+
+        else:     
+            for i in broadcaster:
+                if user_id != i and self.__connections[i]:
+                    self.__connections[i].send(json.dumps({
+                        'sender_id': user_id,
+                        'sender_nickname': self.__nicknames[user_id],
+                        'message': message
+                    }).encode())
 
     def __waitForLogin(self, connection):
         # 尝试接受数据
@@ -89,19 +103,52 @@ class Server:
             obj = json.loads(buffer)
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
-                self.__connections.append(connection)
-                self.__nicknames.append(obj['nickname'])
-                connection.send(json.dumps({
-                    'id': len(self.__connections) - 1
-                }).encode())
-
-                # 开辟一个新的线程
-                thread = threading.Thread(
-                    target=self.__user_thread, 
-                    args=(len(self.__connections) - 1,)
+                auth._auth.load_users()
+                reg_result = auth._auth.authenticate(
+                    obj['username'], 
+                    obj['password'], 
+                    obj['ip']
                 )
-                thread.setDaemon(True)
-                thread.start()
+
+                if reg_result:
+                    self.__connections.append(connection)
+                    self.__nicknames.append(obj['nickname'])
+                    connection.send(json.dumps({
+                       'id': len(self.__connections) - 1
+                    }).encode())
+
+                    # 开辟一个新的线程
+                    thread = threading.Thread(
+                        target=self.__user_thread, 
+                        args=(len(self.__connections) - 1,)
+                    )
+                    thread.setDaemon(True)
+                    thread.start()
+
+            elif obj['type'] == 'register':
+                auth._auth.load_users()
+                reg_result = auth._auth.register(
+                    obj['username'], 
+                    obj['password'], 
+                    None,
+                    obj['ip']
+                )
+                auth._auth.save_users()
+                if reg_result:
+                    self.__connections.append(connection)
+                    self.__nicknames.append(obj['nickname'])
+                    connection.send(json.dumps({
+                        'id': len(self.__connections) - 1
+                    }).encode())
+
+                    # 开辟一个新的线程
+                    thread = threading.Thread(
+                        target=self.__user_thread, 
+                        args=(len(self.__connections) - 1,)
+                    )
+                    thread.setDaemon(True)
+                    thread.start()
+                    
             else:
                 print(
                     '[Server] 无法解析json数据包:', 
@@ -144,5 +191,7 @@ class Server:
                 target=self.__waitForLogin, 
                 args=(connection,)
             )
+
+            # thread.daemon = True
             thread.setDaemon(True)
             thread.start()

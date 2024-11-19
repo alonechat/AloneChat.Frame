@@ -30,7 +30,8 @@ class Client(Cmd):
 
         self.__messages_list = []
 
-        self.server_ip = requests.requests('ip6.ipw.cn').text
+        self.ip = '127.0.0.1' #requests.request(url = 'https://ip6.ipw.cn', method = 'GET').text
+        self.server_ip = '127.0.0.1'
 
     def __receive_message_thread(self):
         """

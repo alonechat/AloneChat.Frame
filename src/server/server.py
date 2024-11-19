@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 import sys
+sys.path.append('.')
 import auth
 
 

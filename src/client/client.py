@@ -2,6 +2,7 @@ import os
 import json
 import time
 import socket
+import requests
 import threading
 
 from cmd import Cmd
@@ -20,7 +21,7 @@ class Client(Cmd):
         """
         super().__init__()
         self.__socket = socket.socket(
-            socket.AF_INET, 
+            socket.AF_INET6, 
             socket.SOCK_STREAM
         )
         self.__id = None
@@ -28,6 +29,9 @@ class Client(Cmd):
         self.__isLogin = False
 
         self.__messages_list = []
+
+        self.ip = '127.0.0.1' #requests.request(url = 'https://ip6.ipw.cn', method = 'GET').text
+        self.server_ip = '127.0.0.1'
 
     def __receive_message_thread(self):
         """
@@ -68,8 +72,39 @@ class Client(Cmd):
         """
         启动客户端
         """
-        self.__socket.connect(('127.0.0.1', 8888))
+        self.__socket.connect((self.server_ip, 8888))
         self.cmdloop()
+
+    def do_register(self, args):
+        nickname = args.split(' ')[0]
+        password = args.split(' ')[1]
+
+        self.socket.send(json.dumps({
+            'type': 'register',
+            'nickname': str(nickname),
+            'password': password,
+            'ip' : self.ip
+        }))
+
+        try:
+            buffer = self.__socket.recv(1024).decode()
+            obj = json.loads(buffer)
+
+            try:
+                if obj['id']:
+                    self.__nickname = nickname
+                    self.__id = obj['id']
+                    self.__isLogin = True
+                    print('[Client] 成功登录到聊天室')
+
+                    # 开启子线程用于接受数据
+                    thread = threading.Thread(target=self.__receive_message_thread)
+                    thread.setDaemon(True)
+                    thread.start()
+            except:
+                print('[Client] 无法登录到聊天室')
+        except Exception:
+            print('[Client] 无法从服务器获取数据')
 
     def do_login(self, args):
         """
@@ -77,11 +112,14 @@ class Client(Cmd):
         :param args: 参数
         """
         nickname = args.split(' ')[0]
+        password = args.split(' ')[1]
 
         # 将昵称发送给服务器，获取用户id
         self.__socket.send(json.dumps({
             'type': 'login',
-            'nickname': nickname
+            'nickname': nickname,
+            'password': password,
+            'ip': self.ip
         }).encode())
         # 尝试接受数据
         # noinspection PyBroadException

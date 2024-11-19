@@ -3,7 +3,7 @@ import threading
 import json
 import sys
 sys.path.append('.')
-import auth
+import _auth
 
 
 class Server:
@@ -105,7 +105,7 @@ class Server:
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
                 auth._auth.load_users()
-                reg_result = auth._auth.authenticate(
+                reg_result = _auth._auth.authenticate(
                     obj['username'], 
                     obj['password'], 
                     obj['ip']
@@ -128,7 +128,7 @@ class Server:
 
             elif obj['type'] == 'register':
                 auth._auth.load_users()
-                reg_result = auth._auth.register(
+                reg_result = _auth._auth.register(
                     obj['username'], 
                     obj['password'], 
                     None,

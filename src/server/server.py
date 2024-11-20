@@ -2,8 +2,16 @@ import socket
 import threading
 import json
 import sys
-sys.path.append('.')
-import auth
+import os
+
+sys.path.append(
+    os.path.join(os.path.dirname(
+        os.path.abspath(__file__)
+    ), '_auth')
+)
+# print(sys.path)
+
+import _auth
 
 
 class Server:
@@ -15,7 +23,10 @@ class Server:
         """
         构造
         """
-        self.__socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        self.__socket = socket.socket(
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        )
         self.__connections = list()
         self.__nicknames = list()
 
@@ -104,12 +115,13 @@ class Server:
             obj = json.loads(buffer)
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
-                auth._auth.load_users()
-                reg_result = auth._auth.authenticate(
+                #. _auth.load_users()
+                reg_result = True
+                '''_auth.authenticate(
                     obj['username'], 
                     obj['password'], 
                     obj['ip']
-                )
+                )'''
 
                 if reg_result:
                     self.__connections.append(connection)
@@ -127,14 +139,14 @@ class Server:
                     thread.start()
 
             elif obj['type'] == 'register':
-                auth._auth.load_users()
-                reg_result = auth._auth.register(
+                _auth.load_users()
+                reg_result = _auth.register(
                     obj['username'], 
                     obj['password'], 
                     None,
                     obj['ip']
                 )
-                auth._auth.save_users()
+                _auth.save_users()
                 if reg_result:
                     self.__connections.append(connection)
                     self.__nicknames.append(obj['nickname'])

@@ -4,12 +4,12 @@ import json
 import sys
 import os
 
-sys.path.append(os.path.abspath(
-    os.path.join(
-        os.path.abspath(__file__), '_auth'
-    )
-))
-print(sys.path)
+sys.path.append(
+    os.path.join(os.path.dirname(
+        os.path.abspath(__file__)
+    ), '_auth')
+)
+# print(sys.path)
 
 import _auth
 

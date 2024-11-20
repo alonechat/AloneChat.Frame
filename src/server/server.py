@@ -2,7 +2,10 @@ import socket
 import threading
 import json
 import sys
-sys.path.append('.')
+import os
+print(
+    os.path.abspath(__file__)
+)
 import _auth
 
 
@@ -104,7 +107,7 @@ class Server:
             obj = json.loads(buffer)
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
-                auth._auth.load_users()
+                _auth._auth.load_users()
                 reg_result = _auth._auth.authenticate(
                     obj['username'], 
                     obj['password'], 
@@ -127,14 +130,14 @@ class Server:
                     thread.start()
 
             elif obj['type'] == 'register':
-                auth._auth.load_users()
+                _auth._auth.load_users()
                 reg_result = _auth._auth.register(
                     obj['username'], 
                     obj['password'], 
                     None,
                     obj['ip']
                 )
-                auth._auth.save_users()
+                _auth._auth.save_users()
                 if reg_result:
                     self.__connections.append(connection)
                     self.__nicknames.append(obj['nickname'])

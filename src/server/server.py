@@ -3,9 +3,14 @@ import threading
 import json
 import sys
 import os
-print(
-    os.path.abspath(__file__)
-)
+
+sys.path.append(os.path.abspath(
+    os.path.join(
+        os.path.abspath(__file__), '_auth'
+    )
+))
+print(sys.path)
+
 import _auth
 
 
@@ -110,9 +115,9 @@ class Server:
             obj = json.loads(buffer)
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
-                #. _auth._auth.load_users()
+                #. _auth.load_users()
                 reg_result = True
-                '''_auth._auth.authenticate(
+                '''_auth.authenticate(
                     obj['username'], 
                     obj['password'], 
                     obj['ip']
@@ -134,14 +139,14 @@ class Server:
                     thread.start()
 
             elif obj['type'] == 'register':
-                _auth._auth.load_users()
-                reg_result = _auth._auth.register(
+                _auth.load_users()
+                reg_result = _auth.register(
                     obj['username'], 
                     obj['password'], 
                     None,
                     obj['ip']
                 )
-                _auth._auth.save_users()
+                _auth.save_users()
                 if reg_result:
                     self.__connections.append(connection)
                     self.__nicknames.append(obj['nickname'])

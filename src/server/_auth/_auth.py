@@ -77,7 +77,7 @@ def authenticate(username, password, ip='127.0.0.1'):
     user_info = USERS[username]
     hashed_password, salt = hash_password(password, user_info['salt'])
     if hashed_password == user_info['hash']:
-		dns = _dns._DNS()
+        dns = _dns._DNS()
         dns.load()
         dns.add_user(username, ip)
         dns.save()

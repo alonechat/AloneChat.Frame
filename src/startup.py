@@ -6,12 +6,14 @@ sys.path.extend([
         os.path.join(os.path.dirname(
             __file__
         ), 'server')
-    ),
-    os.path.abspath(
-        os.path.join(os.path.dirname(
-            __file__
-        ), 'client')
     )
+# '''
+#    os.path.abspath(
+#        os.path.join(os.path.dirname(
+#            __file__
+#        ), 'client')
+#    )
+#'''
 ])
 
 try:

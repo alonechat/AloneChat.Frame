@@ -21,7 +21,7 @@ class Client(Cmd):
         """
         super().__init__()
         self.__socket = socket.socket(
-            socket.AF_INET6, 
+            socket.AF_INET, 
             socket.SOCK_STREAM
         )
         self.__id = None
@@ -79,12 +79,12 @@ class Client(Cmd):
         nickname = args.split(' ')[0]
         password = args.split(' ')[1]
 
-        self.socket.send(json.dumps({
+        self.__socket.send(json.dumps({
             'type': 'register',
             'nickname': str(nickname),
             'password': password,
             'ip' : self.ip
-        }))
+        }).encode())
 
         try:
             buffer = self.__socket.recv(1024).decode()

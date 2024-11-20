@@ -18,7 +18,7 @@ class Server:
         """
         构造
         """
-        self.__socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__connections = list()
         self.__nicknames = list()
 
@@ -108,11 +108,12 @@ class Server:
             # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
             if obj['type'] == 'login':
                 _auth._auth.load_users()
-                reg_result = _auth._auth.authenticate(
+                reg_result = True
+                '''_auth._auth.authenticate(
                     obj['username'], 
                     obj['password'], 
                     obj['ip']
-                )
+                )'''
 
                 if reg_result:
                     self.__connections.append(connection)
